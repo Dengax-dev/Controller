@@ -3,17 +3,17 @@
         {
             "name": "Template",
             "includePath": [
-                "c:\\Users\\AX\\Desktop\\嵌入式\\stm32\\learningexample\\OLED_IIC_全功能_移植中\\USER",
-                "c:\\Users\\AX\\Desktop\\嵌入式\\stm32\\learningexample\\OLED_IIC_全功能_移植中\\CORE",
-                "c:\\Users\\AX\\Desktop\\嵌入式\\stm32\\learningexample\\OLED_IIC_全功能_移植中\\STM32F10x_FWLib\\inc",
-                "c:\\Users\\AX\\Desktop\\嵌入式\\stm32\\learningexample\\OLED_IIC_全功能_移植中\\SYSTEM\\delay",
-                "c:\\Users\\AX\\Desktop\\嵌入式\\stm32\\learningexample\\OLED_IIC_全功能_移植中\\SYSTEM\\sys",
-                "c:\\Users\\AX\\Desktop\\嵌入式\\stm32\\learningexample\\OLED_IIC_全功能_移植中\\SYSTEM\\usart",
-                "c:\\Users\\AX\\Desktop\\嵌入式\\stm32\\learningexample\\OLED_IIC_全功能_移植中\\HAREWARE\\LED",
-                "c:\\Users\\AX\\Desktop\\嵌入式\\stm32\\learningexample\\OLED_IIC_全功能_移植中\\HAREWARE",
+                "c:\\Users\\AX\\Desktop\\嵌入式\\stm32\\learningexample\\OLED_IIC_全功能_高刷\\USER",
+                "c:\\Users\\AX\\Desktop\\嵌入式\\stm32\\learningexample\\OLED_IIC_全功能_高刷\\CORE",
+                "c:\\Users\\AX\\Desktop\\嵌入式\\stm32\\learningexample\\OLED_IIC_全功能_高刷\\STM32F10x_FWLib\\inc",
+                "c:\\Users\\AX\\Desktop\\嵌入式\\stm32\\learningexample\\OLED_IIC_全功能_高刷\\SYSTEM\\delay",
+                "c:\\Users\\AX\\Desktop\\嵌入式\\stm32\\learningexample\\OLED_IIC_全功能_高刷\\SYSTEM\\sys",
+                "c:\\Users\\AX\\Desktop\\嵌入式\\stm32\\learningexample\\OLED_IIC_全功能_高刷\\SYSTEM\\usart",
+                "c:\\Users\\AX\\Desktop\\嵌入式\\stm32\\learningexample\\OLED_IIC_全功能_高刷\\HAREWARE\\LED",
+                "c:\\Users\\AX\\Desktop\\嵌入式\\stm32\\learningexample\\OLED_IIC_全功能_高刷\\HAREWARE",
                 "D:\\software\\keil\\ARM\\ARMCC\\include",
                 "D:\\software\\keil\\ARM\\ARMCC\\include\\rw",
-                "c:\\Users\\AX\\Desktop\\嵌入式\\stm32\\learningexample\\OLED_IIC_全功能_移植中\\STM32F10x_FWLib\\src"
+                "c:\\Users\\AX\\Desktop\\嵌入式\\stm32\\learningexample\\OLED_IIC_全功能_高刷\\STM32F10x_FWLib\\src"
             ],
             "defines": [
                 "STM32F10X_HD",
