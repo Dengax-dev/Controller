@@ -218,6 +218,28 @@ void OLED_Fill(unsigned char Fill_Data)
 	}
 }
 
+//全屏填充
+void OLED_Fill_Fast(unsigned char Fill_Data)  
+{
+	unsigned char m,n;
+	
+	for(m=0;m<8;m++){
+		OLED_WriteCommand(0xb0+m);
+		OLED_WriteCommand(0x00);
+		OLED_WriteCommand(0x10);
+		
+		OLED_I2C_Start();
+		OLED_I2C_SendByte(0x78);		//从机地址
+		OLED_I2C_SendByte(0x40);		//写数据
+		
+		for(n=0;n<128;n++){
+			// OLED_WriteData(Fill_Data);
+			OLED_I2C_SendByte(Fill_Data);
+		}
+		OLED_I2C_Stop();
+	}
+}
+
 /**
   * @brief  OLED清屏
   * @param  无
@@ -428,6 +450,34 @@ void OLED_DrawBMP(unsigned char x0,unsigned char y0,unsigned char x1,unsigned ch
 		{
 			OLED_WriteData(BMP[j++]);
 		}
+	}
+}
+
+// Parameters     : x0,y0 起始点坐标(x0:0~127, y0:0~7); x1,y1 图片终点坐标(x1:1~128,y1:1~8)
+// Description    : 选择图片
+void OLED_DrawBMP_Fast(unsigned char x0,unsigned char y0,unsigned char x1,unsigned char y1,unsigned char BMP[])
+{
+	unsigned int j=0;
+	unsigned char x,y;
+
+  if(y1%8==0)
+		y = y1/8;
+  else
+		y = y1/8 + 1;
+	for(y=y0;y<y1;y++)
+	{
+		OLED_SetPos(x0,y);
+
+		OLED_I2C_Start();
+		OLED_I2C_SendByte(0x78);		//从机地址
+		OLED_I2C_SendByte(0x40);		//写数据
+		
+		for(x=x0;x<x1;x++)
+		{
+			// OLED_WriteData(BMP[j++]);
+			OLED_I2C_SendByte(BMP[j++]);
+		}
+		OLED_I2C_Stop();
 	}
 }
 

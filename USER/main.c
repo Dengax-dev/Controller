@@ -26,19 +26,20 @@ int main(void)
     Timer_Init();
 	// Pwm_Init();
 		
-	OLED_Fill(0xFF);
+	OLED_Fill_Fast(0xFF); //Ìî³ä°×É«
 	delay_ms(500);
-	OLED_Fill(0x00);
+	OLED_Fill_Fast(0x00); //ÇåÆÁ
 
     while(1)
     {
         // OLED_ShowStr(20,0,"Hello world!",1);			//ÏÔÊ¾×Ö·û´®
-        // OLED_ShowNum(3,4,4,1,1);
+        // OLED_ShowNum(3,4,4,1,12);
+        // refresh_count+=1;
         // OLED_ShowCN_Str(20 , 1 , 0 , 3);
-        OLED_DrawBMP(0,0,127,8,BMP3);						//ÏÔÊ¾Í¼Æ¬
+        OLED_DrawBMP_Fast(0,0,128,8,BMP3);						//ÏÔÊ¾Í¼Æ¬
         refresh_count+=1;
 
-        OLED_DrawBMP(0,0,127,8,BMP4);						//ÏÔÊ¾Í¼Æ¬
+        OLED_DrawBMP_Fast(0,0,128,8,BMP4);						//ÏÔÊ¾Í¼Æ¬
         refresh_count+=1;
 
         // OLED_DrawGIF(30,2,78,8,12,294,BMP2);			//ÏÔÊ¾¶¯Ì¬Í¼Æ¬
