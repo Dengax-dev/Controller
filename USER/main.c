@@ -34,6 +34,9 @@ int main(void)
     OLED_ShowStr(0,1,"speed_y:000",1);
     OLED_ShowStr(0,2,"quality:000",1);
     
+    OLED_ShowStr(0,4,"speed_x:000",1);
+    OLED_ShowStr(0,5,"speed_y:000",1);
+
     while(1)
     {
         if(Flow_Data.speed_x<0)OLED_ShowStr(48,0,"-",1);
@@ -45,6 +48,16 @@ int main(void)
         OLED_ShowNum(54,0,change(Flow_Data.speed_x),2,12);
         OLED_ShowNum(54,1,change(Flow_Data.speed_y),2,12);
         OLED_ShowNum(48,2,Flow_Data.quality,3,12);
+
+
+        if(Flow_kalman_Data.speed_x<0)OLED_ShowStr(48,4,"-",1);
+        else OLED_ShowStr(48,4," ",1);
+
+        if(Flow_kalman_Data.speed_y<0)OLED_ShowStr(48,5,"-",1);
+        else OLED_ShowStr(48,5," ",1);
+
+        OLED_ShowNum(54,4,change(Flow_kalman_Data.speed_x),2,12);
+        OLED_ShowNum(54,5,change(Flow_kalman_Data.speed_y),2,12);
     }
 }
 
@@ -56,7 +69,16 @@ void TIM2_IRQHandler(void) //10ms
 		{
 			flow_decode(USART_RX_BUF);
 			USART_RX_STA = 0;
+
+            Flow_kalman_Data.speed_x = (float)(Flow_Data.speed_x);
+            Flow_kalman_Data.speed_y = (float)(Flow_Data.speed_y);
+
+            Flow_kalman_Data.speed_x = kalmanFilter_A(Flow_kalman_Data.speed_x);
+            // kalmanFilter_A(Flow_kalman_Data.speed_y);
+
+            printf("ori_x:%4d   ori_y:%4d   klm_x:%.2f   klm_y:%.2f\r\n",Flow_Data.speed_x,Flow_Data.speed_y,Flow_kalman_Data.speed_x,Flow_kalman_Data.speed_y);
 		}
+
         TIM_ClearITPendingBit(TIM2,TIM_IT_Update); //清除标志位
     }
 }

@@ -2,7 +2,7 @@
 #include "usart.h"
 #include "gl9306.h"
 
-Gl9306_Data Flow_Data = {0,0};
+Gl9306_Data Flow_Data = {0,0,0};
 
 //¹âÁ÷½âÂë
 void flow_decode(u8 *UartRxOpticalFlow)
