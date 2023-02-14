@@ -4,7 +4,7 @@
 void OLED_Init(void);
 void OLED_Clear(void);
 void OLED_ShowChar(u8 x,u8 y,u8 chr,u8 Char_Size);
-void OLED_ShowStr(unsigned char x, unsigned char y, unsigned char ch[], unsigned char TextSize);
+void OLED_ShowStr(unsigned char x, unsigned char y, unsigned char *ch, unsigned char TextSize);
 void OLED_ShowNum(u8 x,u8 y,u32 num,u8 len,u8 size2);
 // void OLED_ShowSignedNum(uint8_t Line, uint8_t Column, int32_t Number, uint8_t Length);
 // void OLED_ShowHexNum(uint8_t Line, uint8_t Column, uint32_t Number, uint8_t Length);

@@ -605,6 +605,16 @@
               <FileType>5</FileType>
               <FilePath>..\HAREWARE\timer.h</FilePath>
             </File>
+            <File>
+              <FileName>gl9306.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HAREWARE\gl9306.c</FilePath>
+            </File>
+            <File>
+              <FileName>gl9306.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\HAREWARE\gl9306.h</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>

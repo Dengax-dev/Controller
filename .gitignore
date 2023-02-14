@@ -1,2 +1,5 @@
 OBJ/
-/keilkill.bat
+USER/.vscode/
+USER/DebugConfig/
+USER/Listings/
+keilkill.bat

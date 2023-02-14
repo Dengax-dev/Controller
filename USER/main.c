@@ -6,23 +6,23 @@
 #include "timer.h"
 #include "usart.h"
 #include "OLED_Codetab.h"
+#include "gl9306.h"
+#include "pid.h"
 
-// unsigned char KeyNum;
-uint16_t refresh_count = 0;
-uint16_t refresh_count_last1 = 0;
-uint16_t refresh_count_last2 = 0;
-
-uint16_t time_count = 0;
+//数字正负取反
+int16_t change(int16_t num)
+{
+    if(num < 0) num = ~(num - 1);
+    // else if(num > 0) num = ~num + 1;
+    return num;
+}
 
 int main(void)
 {
-    // int a = 0;
-	// int i;
-
     delay_init();
     OLED_Init();
-    Key_Init();
-    uart_init(115200);
+    // Key_Init();
+    uart_init(19200);
     Timer_Init();
 	// Pwm_Init();
 		
@@ -30,60 +30,33 @@ int main(void)
 	delay_ms(500);
 	OLED_Fill_Fast(0x00); //清屏
 
+    OLED_ShowStr(0,0,"speed_x:000",1);
+    OLED_ShowStr(0,1,"speed_y:000",1);
+    OLED_ShowStr(0,2,"quality:000",1);
+    
     while(1)
     {
-        // OLED_ShowStr(20,0,"Hello world!",1);			//显示字符串
-        // OLED_ShowNum(3,4,4,1,12);
-        // refresh_count+=1;
-        // OLED_ShowCN_Str(20 , 1 , 0 , 3);
-        OLED_DrawBMP_Fast(0,0,128,8,BMP3);						//显示图片
-        refresh_count+=1;
+        if(Flow_Data.speed_x<0)OLED_ShowStr(48,0,"-",1);
+        else OLED_ShowStr(48,0," ",1);
 
-        OLED_DrawBMP_Fast(0,0,128,8,BMP4);						//显示图片
-        refresh_count+=1;
+        if(Flow_Data.speed_y<0)OLED_ShowStr(48,1,"-",1);
+        else OLED_ShowStr(48,1," ",1);
 
-        // OLED_DrawGIF(30,2,78,8,12,294,BMP2);			//显示动态图片
-
-        /* 
-        for(i=0;i<3;i++){
-            OLED_ShowCN(0 + 16*i,6,i);
-        } */
-
-        /* 
-			// PWM_SetCompare1(100);
-        
-			
-       for(a = 0;a<10000;a++)
-        {
-            
-            //OLED_ShowChar(1,1,'A');
-        // OLED_ShowString(2,1,"Hello World!");
-            // OLED_ShowNum(3,1,a,3);
-        }
-        for(a =10000;a>0;a--)
-        {
-            //OLED_ShowChar(1,1,'A');
-            // OLED_ShowString(2,1,"Hello World!");
-            // OLED_ShowNum(3,1,a,3);
-        }
- */
-
-
+        OLED_ShowNum(54,0,change(Flow_Data.speed_x),2,12);
+        OLED_ShowNum(54,1,change(Flow_Data.speed_y),2,12);
+        OLED_ShowNum(48,2,Flow_Data.quality,3,12);
     }
 }
 
-//中断函数模板
-void TIM2_IRQHandler(void)
+void TIM2_IRQHandler(void) //10ms
 {
     if(TIM_GetITStatus(TIM2,TIM_IT_Update)==SET)
     {
-        time_count++;
-        printf("time_count:%d   fps:%.2f   refresh_count_list:%d %d %d\r\n",time_count,(float)(refresh_count+refresh_count_last1+refresh_count_last2)/3,refresh_count,refresh_count_last1,refresh_count_last2);
-
-        refresh_count_last2 = refresh_count_last1;
-        refresh_count_last1 = refresh_count;
-        refresh_count = 0;
-
+        if((USART_RX_STA&0x8000)!=0)//接收完成
+		{
+			flow_decode(USART_RX_BUF);
+			USART_RX_STA = 0;
+		}
         TIM_ClearITPendingBit(TIM2,TIM_IT_Update); //清除标志位
     }
 }
