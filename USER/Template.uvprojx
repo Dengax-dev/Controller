@@ -625,6 +625,16 @@
               <FileType>5</FileType>
               <FilePath>..\HAREWARE\pid.h</FilePath>
             </File>
+            <File>
+              <FileName>control.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HAREWARE\control.c</FilePath>
+            </File>
+            <File>
+              <FileName>control.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\HAREWARE\control.h</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>

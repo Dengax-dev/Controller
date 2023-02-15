@@ -8,6 +8,9 @@
 #include "OLED_Codetab.h"
 #include "gl9306.h"
 #include "pid.h"
+#include "control.h"
+
+// u8 cmd1[] = {0x00, 0x01, 0xd3, 0xff,0x00, 0x01, 0xd3, 0xff};
 
 //数字正负取反
 int16_t change(int16_t num)
@@ -22,7 +25,8 @@ int main(void)
     delay_init();
     OLED_Init();
     // Key_Init();
-    uart_init(19200);
+    uart1_init(19200);
+    control_uart2_init(19200);
     Timer_Init();
 	// Pwm_Init();
 		
@@ -37,6 +41,8 @@ int main(void)
     OLED_ShowStr(0,4,"speed_x:000",1);
     OLED_ShowStr(0,5,"speed_y:000",1);
 
+    Send_Cmd(cmd2);
+    
     while(1)
     {
         if(Flow_Data.speed_x<0)OLED_ShowStr(48,0,"-",1);
@@ -76,7 +82,10 @@ void TIM2_IRQHandler(void) //10ms
             Flow_kalman_Data.speed_x = kalmanFilter_A(Flow_kalman_Data.speed_x);
             // kalmanFilter_A(Flow_kalman_Data.speed_y);
 
-            printf("ori_x:%4d   ori_y:%4d   klm_x:%.2f   klm_y:%.2f\r\n",Flow_Data.speed_x,Flow_Data.speed_y,Flow_kalman_Data.speed_x,Flow_kalman_Data.speed_y);
+            // printf("ori_x:%4d   ori_y:%4d   klm_x:%.2f   klm_y:%.2f\r\n",Flow_Data.speed_x,Flow_Data.speed_y,Flow_kalman_Data.speed_x,Flow_kalman_Data.speed_y);
+
+            //串口2测试
+            
 		}
 
         TIM_ClearITPendingBit(TIM2,TIM_IT_Update); //清除标志位
