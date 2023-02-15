@@ -9,7 +9,7 @@ u8 cmd6[]  = {0x66, 0x80, 0x80, 0x80, 0xff, 0x00, 0x7f, 0x99}; //偏航角：右转
 u8 cmd7[]  = {0x66, 0x80, 0x00, 0x80, 0x80, 0x00, 0x80, 0x99}; //俯仰角：后退
 u8 cmd8[]  = {0x66, 0x80, 0xff, 0x80, 0x80, 0x00, 0x7f, 0x99}; //俯仰角：前进
 u8 cmd9[]  = {0x66, 0x00, 0x80, 0x00, 0x80, 0x00, 0x80, 0x99}; //横滚角：左侧飞
-u8 cmd10[] = {0x66, 0x80, 0x80, 0x00, 0x80, 0x00, 0x7f, 0x99}; //横滚角：右侧飞
+u8 cmd10[] = {0x66, 0xff, 0x80, 0x80, 0x80, 0x00, 0x7f, 0x99}; //横滚角：右侧飞
 u8 cmd11[] = {0x66, 0x80, 0x80, 0x00, 0x80, 0x04, 0x04, 0x99}; //电机停转
 
 void control_uart2_init(u32 bound)
@@ -64,6 +64,35 @@ void Send_Cmd(u8 *cmd_array)
         USART_SendData(CONTROL_USART,*cmd_array++);
     }
 }
+
+//生成校验位
+// u8 Cal_Cmd(u8 data1, u8 data2, u8 data3, u8 data4, u8 data5)
+// {
+//     u8 data6;
+//     data6 = data1^data2^data3^data4^data5;
+
+//     return data6;
+// }
+
+//生成控制数组
+u8* mk_CmdArray(u8 data1, u8 data2, u8 data3, u8 data4, u8 data5)
+{
+    static u8 array[8];
+    array[0] = 0x66; 
+    array[1] = data1;
+    array[2] = data2;
+    array[3] = data3;
+    array[4] = data4;
+    array[5] = data5;
+    array[6] = data1^data2^data3^data4^data5; //校验位
+    array[7] = 0x99;
+
+    return array;
+}
+
+//油门控制  传入油门值：128平衡  0-127下降  129-255上升
+
+
 
  //命令2：定高模式
 

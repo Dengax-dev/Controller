@@ -28,5 +28,6 @@ extern u8 cmd11[];
 
 void control_uart2_init(u32 bound);
 void Send_Cmd(u8 *cmd_array);
+u8 * mk_CmdArray(u8 data1, u8 data2, u8 data3, u8 data4, u8 data5);
 
 #endif

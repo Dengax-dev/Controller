@@ -41,8 +41,8 @@ int main(void)
     OLED_ShowStr(0,4,"speed_x:000",1);
     OLED_ShowStr(0,5,"speed_y:000",1);
 
-    Send_Cmd(cmd2);
-    
+    // Send_Cmd(mk_CmdArray(0xff, 0x80, 0x80, 0x80, 0x00));
+
     while(1)
     {
         if(Flow_Data.speed_x<0)OLED_ShowStr(48,0,"-",1);
@@ -81,13 +81,15 @@ void TIM2_IRQHandler(void) //10ms
 
             Flow_kalman_Data.speed_x = kalmanFilter_A(Flow_kalman_Data.speed_x);
             // kalmanFilter_A(Flow_kalman_Data.speed_y);
-
+            
+            //print flow data
             // printf("ori_x:%4d   ori_y:%4d   klm_x:%.2f   klm_y:%.2f\r\n",Flow_Data.speed_x,Flow_Data.speed_y,Flow_kalman_Data.speed_x,Flow_kalman_Data.speed_y);
 
             //串口2测试
+            // Send_Cmd(cmd2);
+
             
 		}
-
         TIM_ClearITPendingBit(TIM2,TIM_IT_Update); //清除标志位
     }
 }
