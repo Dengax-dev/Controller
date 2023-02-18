@@ -28,8 +28,9 @@ int main(void)
     delay_init();
     OLED_Init();
     // Key_Init();
-    uart1_init(19200);
-    control_uart2_init(115200);
+    uart1_init(115200);
+    control_uart2_init(19200);
+    FlowData_uart3_init(19200);
     PidPara_Init();
     // Timer_Init();
 	// Pwm_Init();
@@ -51,7 +52,7 @@ int main(void)
     Timer_Init();
 
     // ≤‚ ‘√¸¡Ó
-    // Send_Cmd(mk_CmdArray(0xff, 0x80, 0x80, 0x80, 0x00));
+    Send_Cmd(mk_CmdArray(0xff, 0x80, 0x80, 0x80, 0x00));
 
     while(1)
     {
@@ -109,9 +110,9 @@ void TIM2_IRQHandler(void) //10ms
             // OLED_ShowNum(54,7,Flow_Data.move_y,5,12);
             
             //PID≤Œ ˝º∆À„
-            PID_Cal(&PID_Posi_High, 1000, heigh);
-            PID_Cal(&PID_Posi_x, 0, Flow_Data.move_x);
-            PID_Cal(&PID_Posi_y, 0, Flow_Data.move_y);
+            // PID_Cal(&PID_Posi_High, 1000, heigh);
+            // PID_Cal(&PID_Posi_x, 0, Flow_Data.move_x);
+            // PID_Cal(&PID_Posi_y, 0, Flow_Data.move_y);
 
 
 		}

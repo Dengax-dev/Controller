@@ -18,6 +18,7 @@
         "*.tcc": "c",
         "cstdlib": "c",
         "pid.h": "c",
-        "control.h": "c"
+        "control.h": "c",
+        "stdio.h": "c"
     }
 }
