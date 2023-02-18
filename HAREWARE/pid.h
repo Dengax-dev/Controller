@@ -26,6 +26,7 @@ typedef struct PID{
 extern Gl9306_kalman_Data Flow_kalman_Data;
 extern PID_TYPE PID_Posi_x;
 extern PID_TYPE PID_Posi_y;
+extern PID_TYPE PID_Posi_High;
 
 float kalmanFilter_A(float inData);
 void PID_Cal(PID_TYPE *PID, float target, float measure);

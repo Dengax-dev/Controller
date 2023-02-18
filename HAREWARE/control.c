@@ -111,43 +111,37 @@ do{
         }
         case 1:
         {
-        Hex |= (0x1<<(i*4));
+            Hex |= (0x1<<(i*4));
             break;
         }
         case 2:
         {
         Hex |= (0x2<<(i*4));
-
             break;
         }
         case 3:
         {
             Hex |= (0x3<<(i*4));
-
             break;
         }
         case 4:
         {
         Hex |= (0x4<<(i*4));
-            
             break;
         }
         case 5:
         {
             Hex |= (0x5<<(i*4));
-            
             break;
         }
         case 6:
         {
             Hex |= (0x6<<(i*4));
-            
             break;
         }
         case 7:
         {
             Hex |= (0x7<<(i*4));
-            
             break;
         }
         case 8:
@@ -157,20 +151,17 @@ do{
         }
         case 9:
         {
-                Hex |= (0x9<<(i*4));
-            
+            Hex |= (0x9<<(i*4));
             break;
         }
         case 10:
         {
                 Hex |= (0xA<<(i*4));
-            
             break;
         }
         case 11:
         {
             Hex |= (0xb<<(i*4));
-        
             break;
         }
         case 12:
@@ -187,7 +178,6 @@ do{
         case 14:
         {
                 Hex |= (0xe<<(i*4));
-    
             break;
         }
         case 15:
@@ -196,10 +186,9 @@ do{
             break;
         }
     }
-          Hex &= 0xFFFFFFFF;
-                i++;    
-  } while
-    (ram/16 >= 0 && i <= 8);
+    Hex &= 0xFFFFFFFF;
+    i++;
+} while(ram/16 >= 0 && i <= 8);
     return Hex;
 }
 

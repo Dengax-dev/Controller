@@ -4,6 +4,7 @@ Gl9306_kalman_Data Flow_kalman_Data = {0,0};
 
 PID_TYPE PID_Posi_x;
 PID_TYPE PID_Posi_y;
+PID_TYPE PID_Posi_High;
 
 //卡尔曼滤波
 float kalmanFilter_A(float inData) 
@@ -49,7 +50,7 @@ void PidPara_Init(void)
     PID_Posi_x.Differ = 0;           //微分项
     PID_Posi_x.PreError = 0;         //前一次误差
     PID_Posi_x.Ilimit = 0;           //积分分离
-    PID_Posi_x.Irang = 20;            //积分限幅
+    PID_Posi_x.Irang = 0;            //积分限幅
     PID_Posi_x.Ilimit_flag = 0;    //积分分离标志
     PID_Posi_x.Pout = 0;             //比例项输出
     PID_Posi_x.Iout = 0;             //积分项输出
@@ -64,12 +65,27 @@ void PidPara_Init(void)
     PID_Posi_y.Differ = 0;           //微分项
     PID_Posi_y.PreError = 0;         //前一次误差
     PID_Posi_y.Ilimit = 0;           //积分分离
-    PID_Posi_y.Irang = 20;            //积分限幅
+    PID_Posi_y.Irang = 0;            //积分限幅
     PID_Posi_y.Ilimit_flag = 0;    //积分分离标志
     PID_Posi_y.Pout = 0;             //比例项输出
     PID_Posi_y.Iout = 0;             //积分项输出
     PID_Posi_y.Dout = 0;             //微分项输出
     PID_Posi_y.OutPut = 0;           //总输出
+
+    PID_Posi_High.P = 0;
+    PID_Posi_High.I = 0;
+    PID_Posi_High.D = 0;
+    PID_Posi_High.Error = 0;            //比例项
+    PID_Posi_High.Integral = 0;         //积分项
+    PID_Posi_High.Differ = 0;           //微分项
+    PID_Posi_High.PreError = 0;         //前一次误差
+    PID_Posi_High.Ilimit = 0;           //积分分离
+    PID_Posi_High.Irang = 0;            //积分限幅
+    PID_Posi_High.Ilimit_flag = 0;    //积分分离标志
+    PID_Posi_High.Pout = 0;             //比例项输出
+    PID_Posi_High.Iout = 0;             //积分项输出
+    PID_Posi_High.Dout = 0;             //微分项输出
+    PID_Posi_High.OutPut = 0;           //总输出
 }
 
 ///*悬停控制*/

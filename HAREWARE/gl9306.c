@@ -20,11 +20,9 @@ void flow_decode(u8 *UartRxOpticalFlow)
 	}
 }
 
+//光流位移计算
 void move_cal(uint16_t opticalflow_high)
 {
-	Flow_Data.move_x+=(Flow_Data.speed_x*opticalflow_high)/1000.0f;//单位:乘以高度单位mm后为实际位移mm
-    Flow_Data.move_y+=(Flow_Data.speed_y*opticalflow_high)/1000.0f;//单位:乘以高度单位mm后为实际位移mm
-
-	// if((Flow_Data.move_x > 1000)||(Flow_Data.move_x < -1000))Flow_Data.move_x = 0;
-	// if((Flow_Data.move_y > 1000)||(Flow_Data.move_y < -1000))Flow_Data.move_y = 0;
+	Flow_Data.move_x+=(Flow_Data.speed_x*opticalflow_high)/1000.0f;//单位:mm   乘以高度单位mm
+    Flow_Data.move_y+=(Flow_Data.speed_y*opticalflow_high)/1000.0f;//单位:mm   乘以高度单位mm
 }

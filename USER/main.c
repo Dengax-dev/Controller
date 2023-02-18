@@ -12,7 +12,8 @@
 
 // u8 cmd1[] = {0x00, 0x01, 0xd3, 0xff,0x00, 0x01, 0xd3, 0xff};
 
-int count = 0;
+// int count = 0;
+float heigh;
 
 //数字正负取反
 int16_t change(int16_t num)
@@ -49,18 +50,8 @@ int main(void)
 
     Timer_Init();
 
-
+    // 测试命令
     // Send_Cmd(mk_CmdArray(0xff, 0x80, 0x80, 0x80, 0x00));
-    // delay_ms(100);
-    // USART_SendData(CONTROL_USART,DEC_HEX(0));
-    // delay_ms(100);
-    // USART_SendData(CONTROL_USART,DEC_HEX(255));
-    // delay_ms(100);
-    // USART_SendData(CONTROL_USART,DEC_HEX(16));
-    // delay_ms(100);
-    // USART_SendData(CONTROL_USART,DEC_HEX(3));
-    // delay_ms(100);
-    // USART_SendData(CONTROL_USART,DEC_HEX(127));
 
     while(1)
     {
@@ -103,8 +94,8 @@ void TIM2_IRQHandler(void) //10ms
 			flow_decode(USART_RX_BUF);
 			USART_RX_STA = 0;
 
-            Flow_kalman_Data.speed_x = (float)(Flow_Data.speed_x);
-            Flow_kalman_Data.speed_y = (float)(Flow_Data.speed_y);
+            // Flow_kalman_Data.speed_x = (float)(Flow_Data.speed_x);
+            // Flow_kalman_Data.speed_y = (float)(Flow_Data.speed_y);
 
             // Flow_kalman_Data.speed_x = kalmanFilter_A(Flow_Data.speed_x);
             // kalmanFilter_A(Flow_kalman_Data.speed_y);
@@ -112,10 +103,17 @@ void TIM2_IRQHandler(void) //10ms
             //print flow data
             // printf("ori_x:%4d   ori_y:%4d   klm_x:%.2f   klm_y:%.2f\r\n",Flow_Data.speed_x,Flow_Data.speed_y,Flow_kalman_Data.speed_x,Flow_kalman_Data.speed_y);
 
-            move_cal(760);
+            move_cal(heigh); //光流位移校准
             // printf("move_x:%f,%f\r\n",Flow_Data.move_x,Flow_Data.move_y);
             // OLED_ShowNum(54,6,Flow_Data.move_x,5,12);
             // OLED_ShowNum(54,7,Flow_Data.move_y,5,12);
+            
+            //PID参数计算
+            PID_Cal(&PID_Posi_High, 1000, heigh);
+            PID_Cal(&PID_Posi_x, 0, Flow_Data.move_x);
+            PID_Cal(&PID_Posi_y, 0, Flow_Data.move_y);
+
+
 		}
         TIM_ClearITPendingBit(TIM2,TIM_IT_Update); //清除标志位
     }
