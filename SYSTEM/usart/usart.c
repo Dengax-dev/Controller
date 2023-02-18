@@ -52,8 +52,8 @@ void _sys_exit(int x)
 //重定义fputc函数 
 int fputc(int ch, FILE *f)
 {      
-	while((USART1->SR&0X40)==0);//循环发送,直到发送完毕   
-    USART1->DR = (u8) ch;      
+	while((USART2->SR&0X40)==0);//循环发送,直到发送完毕   
+    USART2->DR = (u8) ch;      
 	return ch;
 }
 #endif 
@@ -144,7 +144,9 @@ void USART1_IRQHandler(void)                	//串口1中断服务程序
 
 			if(USART_RX_STA>(USART_REC_LEN-1))USART_RX_STA=0;//接收数据错误,重新开始接收
 
-			if(Res==0xAA)USART_RX_STA|=0x8000; //接收完成标志
+			if(Res==0xAA){USART_RX_STA|=0x8000; //接收完成标志
+			}
+
 		}
 
 		// if((USART_RX_STA&0x8000)!=0)//接收完成

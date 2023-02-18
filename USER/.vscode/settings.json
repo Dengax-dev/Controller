@@ -17,6 +17,7 @@
         "cmath": "c",
         "*.tcc": "c",
         "cstdlib": "c",
-        "pid.h": "c"
+        "pid.h": "c",
+        "control.h": "c"
     }
 }

@@ -2,7 +2,7 @@
 #include "usart.h"
 #include "gl9306.h"
 
-Gl9306_Data Flow_Data = {0,0,0};
+Gl9306_Data Flow_Data = {0,0,0,0,0};
 
 //光流解码
 void flow_decode(u8 *UartRxOpticalFlow)
@@ -18,4 +18,13 @@ void flow_decode(u8 *UartRxOpticalFlow)
 			Flow_Data.quality = UartRxOpticalFlow[7];
 		}
 	}
+}
+
+void move_cal(uint16_t opticalflow_high)
+{
+	Flow_Data.move_x+=(Flow_Data.speed_x*opticalflow_high)/1000.0f;//单位:乘以高度单位mm后为实际位移mm
+    Flow_Data.move_y+=(Flow_Data.speed_y*opticalflow_high)/1000.0f;//单位:乘以高度单位mm后为实际位移mm
+
+	// if((Flow_Data.move_x > 1000)||(Flow_Data.move_x < -1000))Flow_Data.move_x = 0;
+	// if((Flow_Data.move_y > 1000)||(Flow_Data.move_y < -1000))Flow_Data.move_y = 0;
 }

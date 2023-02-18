@@ -2,11 +2,14 @@
 
 Gl9306_kalman_Data Flow_kalman_Data = {0,0};
 
+PID_TYPE PID_Posi_x;
+PID_TYPE PID_Posi_y;
+
 //卡尔曼滤波
 float kalmanFilter_A(float inData) 
 {
     static float prevData=0; //前一次数据
-    //p,k可以随意  Q和R他俩的物理意义是噪声的协方差，他们的值是需要我们试出来的。r越小越接近原数据，r越大，虽然滤波结果更平滑，但滤波器会变得不敏感，会有滞后，r参数调整滤波后的曲线与实测曲线的相近程度，r越小越接近。q参数调滤波后的曲线平滑程度，q越小越平滑。
+    //p,k可以随意  Q和R他俩的物理意义是噪声的协方差，r越小越接近原数据，r越大，虽然滤波结果更平滑，但滤波器会变得不敏感，会有滞后，r参数调整滤波后的曲线与实测曲线的相近程度，r越小越接近。q参数调滤波后的曲线平滑程度，q越小越平滑。
     static float p=10, q=0.001, r=0.001, kGain=0;
     
     p = p+q; 
@@ -16,6 +19,57 @@ float kalmanFilter_A(float inData)
     prevData = inData;
 
     return inData; 
+}
+
+void PID_Cal(PID_TYPE *PID, float target, float measure)
+{
+    PID->Error = target - measure; //误差
+    PID->Differ = PID->Error - PID->PreError; //微分量
+    PID->Integral += PID->Error; //累计误差
+
+    if(PID->Integral > PID->Ilimit)  PID->Integral = PID->Ilimit; //积分限幅
+    if(PID->Integral < -PID->Ilimit) PID->Integral = -PID->Ilimit;
+
+    PID->Pout = PID->P * PID->Error;
+    PID->Iout = PID->I * PID->Integral;
+    PID->Dout = PID->D * PID->Differ;
+
+    PID->OutPut = PID->Pout + PID->Iout + PID->Dout;
+
+    PID->PreError = PID->Error; //更新前误差
+}
+
+void PidPara_Init(void)
+{
+    PID_Posi_x.P = 0;
+    PID_Posi_x.I = 0;
+    PID_Posi_x.D = 0;
+    PID_Posi_x.Error = 0;            //比例项
+    PID_Posi_x.Integral = 0;         //积分项
+    PID_Posi_x.Differ = 0;           //微分项
+    PID_Posi_x.PreError = 0;         //前一次误差
+    PID_Posi_x.Ilimit = 0;           //积分分离
+    PID_Posi_x.Irang = 20;            //积分限幅
+    PID_Posi_x.Ilimit_flag = 0;    //积分分离标志
+    PID_Posi_x.Pout = 0;             //比例项输出
+    PID_Posi_x.Iout = 0;             //积分项输出
+    PID_Posi_x.Dout = 0;             //微分项输出
+    PID_Posi_x.OutPut = 0;           //总输出
+
+    PID_Posi_y.P = 0;
+    PID_Posi_y.I = 0;
+    PID_Posi_y.D = 0;
+    PID_Posi_y.Error = 0;            //比例项
+    PID_Posi_y.Integral = 0;         //积分项
+    PID_Posi_y.Differ = 0;           //微分项
+    PID_Posi_y.PreError = 0;         //前一次误差
+    PID_Posi_y.Ilimit = 0;           //积分分离
+    PID_Posi_y.Irang = 20;            //积分限幅
+    PID_Posi_y.Ilimit_flag = 0;    //积分分离标志
+    PID_Posi_y.Pout = 0;             //比例项输出
+    PID_Posi_y.Iout = 0;             //积分项输出
+    PID_Posi_y.Dout = 0;             //微分项输出
+    PID_Posi_y.OutPut = 0;           //总输出
 }
 
 ///*悬停控制*/

@@ -17,28 +17,28 @@ void control_uart2_init(u32 bound)
     //GPIO端口设置
     GPIO_InitTypeDef GPIO_InitStructure;
 	USART_InitTypeDef USART_InitStructure;
-	NVIC_InitTypeDef NVIC_InitStructure;
+	// NVIC_InitTypeDef NVIC_InitStructure;
 	 
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);	//使能USART2
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
   
-	//USART2_TX   GPIOA.9
+	//USART2_TX   GPIOA.2
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2; //PA.2
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;	//复用推挽输出
     GPIO_Init(GPIOA, &GPIO_InitStructure);//初始化GPIOA.2
    
     //USART1_RX	  GPIOA.3初始化
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;//PA3
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;//浮空输入
-    GPIO_Init(GPIOA, &GPIO_InitStructure);//初始化GPIOA.3  
+    // GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;//PA3
+    // GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;//浮空输入
+    // GPIO_Init(GPIOA, &GPIO_InitStructure);//初始化GPIOA.3  
 
     //Usart1 NVIC 配置
-	NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=3 ;//抢占优先级3
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;		//子优先级3
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;			//IRQ通道使能
-	NVIC_Init(&NVIC_InitStructure);	//根据指定的参数初始化VIC寄存器
+	// NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
+	// NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=3 ;//抢占优先级3
+	// NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;		//子优先级3
+	// NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;			//IRQ通道使能
+	// NVIC_Init(&NVIC_InitStructure);	//根据指定的参数初始化VIC寄存器
   
     //USART 初始化设置
 
@@ -47,10 +47,11 @@ void control_uart2_init(u32 bound)
 	USART_InitStructure.USART_StopBits = USART_StopBits_1;//一个停止位
 	USART_InitStructure.USART_Parity = USART_Parity_No;//无奇偶校验位
 	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;//无硬件数据流控制
-	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;	//收发模式
+	// USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;	//收发模式
+    USART_InitStructure.USART_Mode = USART_Mode_Tx;
 
     USART_Init(USART2, &USART_InitStructure); //初始化串2
-    USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);//开启串口接受中断
+    // USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);//开启串口接受中断
     USART_Cmd(USART2, ENABLE);                    //使能串口2
 }
 
@@ -88,6 +89,118 @@ u8* mk_CmdArray(u8 data1, u8 data2, u8 data3, u8 data4, u8 data5)
     array[7] = 0x99;
 
     return array;
+}
+
+// 十进制to十六进制
+int DEC_HEX(uint32_t Dec)
+{ 
+   int ram = 0;//整
+    int ray = 0;//余
+    uint32_t Hex = 0x0;
+    int i =0;
+do{   
+    ram = Dec /16;
+    ray = Dec %16;    
+    Dec = ram;
+    switch(ray)           //看余数为多少
+    {
+        case 0:
+        {
+            Hex |= (0x0<<(i*4));   //然后右移四位，让下一个四位在下一个循环进行运算
+            break;
+        }
+        case 1:
+        {
+        Hex |= (0x1<<(i*4));
+            break;
+        }
+        case 2:
+        {
+        Hex |= (0x2<<(i*4));
+
+            break;
+        }
+        case 3:
+        {
+            Hex |= (0x3<<(i*4));
+
+            break;
+        }
+        case 4:
+        {
+        Hex |= (0x4<<(i*4));
+            
+            break;
+        }
+        case 5:
+        {
+            Hex |= (0x5<<(i*4));
+            
+            break;
+        }
+        case 6:
+        {
+            Hex |= (0x6<<(i*4));
+            
+            break;
+        }
+        case 7:
+        {
+            Hex |= (0x7<<(i*4));
+            
+            break;
+        }
+        case 8:
+        {
+            Hex |= (0x8<<(i*4));
+            break;
+        }
+        case 9:
+        {
+                Hex |= (0x9<<(i*4));
+            
+            break;
+        }
+        case 10:
+        {
+                Hex |= (0xA<<(i*4));
+            
+            break;
+        }
+        case 11:
+        {
+            Hex |= (0xb<<(i*4));
+        
+            break;
+        }
+        case 12:
+        {
+            Hex |= (0xC<<(i*4));
+            break;
+        }
+        case 13:
+        {
+            Hex |= (0xd<<(i*4));
+        
+            break;
+        }
+        case 14:
+        {
+                Hex |= (0xe<<(i*4));
+    
+            break;
+        }
+        case 15:
+        {
+                Hex |= (0xf<<(i*4));
+            break;
+        }
+    }
+          Hex &= 0xFFFFFFFF;
+                i++;    
+  } while
+    (ram/16 >= 0 && i <= 8);
+    return Hex;
 }
 
 //油门控制  传入油门值：128平衡  0-127下降  129-255上升
