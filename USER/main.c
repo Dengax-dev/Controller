@@ -1,5 +1,6 @@
 #include "stm32f10x.h"
 #include "delay.h"
+#include "led.h"
 #include "Key.h"
 #include "OLED.h"
 #include "pwm.h"
@@ -13,7 +14,9 @@
 // u8 cmd1[] = {0x00, 0x01, 0xd3, 0xff,0x00, 0x01, 0xd3, 0xff};
 
 // int count = 0;
-float heigh;
+u8 *a;
+int i,j ;
+float heigh = 760;
 
 //数字正负取反
 int16_t change(int16_t num)
@@ -26,6 +29,7 @@ int16_t change(int16_t num)
 int main(void)
 {
     delay_init();
+    LED_Init();
     OLED_Init();
     // Key_Init();
     uart1_init(115200);
@@ -49,10 +53,111 @@ int main(void)
     OLED_ShowStr(0,6,"move_x:",1);
     OLED_ShowStr(0,7,"move_y:",1);
 
-    Timer_Init();
+    // Timer_Init();
 
     // 测试命令
-    Send_Cmd(mk_CmdArray(0xff, 0x80, 0x80, 0x80, 0x00));
+    // Send_Cmd(mk_CmdArray(0xff, 0x80, 0x80, 0x80, 0x00));
+    LED1_ON();
+
+    Send_Cmd(cmd2); //stay high
+    printf("128\r\n");
+    delay_ms(1000);
+
+    Send_Cmd(cmd2); //stay high
+    printf("128\r\n");
+    delay_ms(1000);
+
+    Send_Cmd(cmd2); //stay high
+    printf("128\r\n");
+    delay_ms(1000);
+
+    Send_Cmd(cmd2); //stay high
+    printf("128\r\n");
+    delay_ms(1000);
+
+    Send_Cmd(cmd2); //stay high
+    printf("128\r\n");
+    delay_ms(1000);
+
+    Send_Cmd(mk_CmdArray_Dec(128, 128, 250, 128));
+    printf("250\r\n");
+    delay_ms(10);
+
+    Send_Cmd(cmd2); //stay high
+    printf("180\r\n");
+    delay_ms(10);
+
+    Send_Cmd(mk_CmdArray_Dec(128, 128, 230, 128));
+    printf("180\r\n");
+    delay_ms(1500);
+
+    Send_Cmd(mk_CmdArray_Dec(128, 128, 230, 128));
+    printf("230\r\n");
+    delay_ms(1500);
+
+    // Send_Cmd(mk_CmdArray_Dec(128, 128, 255, 128));
+    // printf("255\r\n");
+    // delay_ms(1500);
+
+    Send_Cmd(mk_CmdArray_Dec(128, 128, 230, 128));
+    printf("230\r\n");
+    delay_ms(1000);
+
+    Send_Cmd(mk_CmdArray_Dec(128, 128, 255, 128));
+    printf("230\r\n");
+    delay_ms(1000);
+
+    Send_Cmd(mk_CmdArray_Dec(128, 128, 255, 128));
+    printf("230\r\n");
+    delay_ms(1000);
+
+    Send_Cmd(mk_CmdArray_Dec(128, 128, 255, 128));
+    printf("230\r\n");
+    delay_ms(1000);
+
+    Send_Cmd(mk_CmdArray_Dec(128, 128, 255, 128));
+    printf("230\r\n");
+    delay_ms(1000);
+
+    Send_Cmd(mk_CmdArray_Dec(128, 128, 255, 128));
+    printf("230\r\n");
+    delay_ms(1000);
+
+    Send_Cmd(mk_CmdArray_Dec(128, 128, 255, 128));
+    printf("230\r\n");
+    delay_ms(1000);
+
+    Send_Cmd(mk_CmdArray_Dec(128, 128, 128, 128));
+    printf("128\r\n");
+    delay_ms(10);
+    // Send_Cmd(cmd2); //stay high
+    // delay_ms(1000);
+    printf("0\r\n");
+
+    // Send_Cmd(cmd4); //up
+    // delay_ms(10);
+    // Send_Cmd(cmd2); //stay high
+    // delay_ms(10);
+
+    // for(i = 128; i < 255; i++)
+    // {
+    //     a = mk_CmdArray_Dec(128, 128, i, 128);
+    //     Send_Cmd(a);
+    //     delay_ms(50);
+
+    //     for(j = 0; j < 8; j++)
+    //     {
+    //         while(USART_GetFlagStatus(USART1,USART_FLAG_TC)==RESET);
+    //         USART_SendData(USART1, *a++);
+    //     }
+    //     // Send_Cmd(cmd2);
+    //     // delay_ms(10);
+    // }
+    // Send_Cmd(cmd3); //down
+    // delay_ms(5000);
+    Send_Cmd(cmd11); //stop
+
+    LED1_OFF();
 
     while(1)
     {
@@ -78,6 +183,7 @@ int main(void)
         else OLED_ShowStr(48,7," ",1);
 
         delay_ms(10);
+        Send_Cmd(cmd11);
     }
 }
 
@@ -85,6 +191,7 @@ void TIM2_IRQHandler(void) //10ms
 {
     if(TIM_GetITStatus(TIM2,TIM_IT_Update)==SET)
     {
+        // LED1_Turn();
         // count++;
         
         if((USART_RX_STA&0x8000)!=0)//接收完成
