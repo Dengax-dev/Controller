@@ -26,38 +26,9 @@ int16_t change(int16_t num)
     return num;
 }
 
-int main(void)
+void Cmd_Test(void)
 {
-    delay_init();
-    LED_Init();
-    OLED_Init();
-    // Key_Init();
-    uart1_init(115200);
-    control_uart2_init(19200);
-    FlowData_uart3_init(19200);
-    PidPara_Init();
-    // Timer_Init();
-	// Pwm_Init();
-		
-	OLED_Fill_Fast(0xFF); //填充白色
-	delay_ms(500);
-	OLED_Fill_Fast(0x00); //清屏
-
-    OLED_ShowStr(0,0,"speed_x:000",1);
-    OLED_ShowStr(0,1,"speed_y:000",1);
-    OLED_ShowStr(0,2,"quality:000",1);
-    
-    OLED_ShowStr(0,4,"speed_x:000",1);
-    OLED_ShowStr(0,5,"speed_y:000",1);
-
-    OLED_ShowStr(0,6,"move_x:",1);
-    OLED_ShowStr(0,7,"move_y:",1);
-
-    // Timer_Init();
-
-    // 测试命令
-    // Send_Cmd(mk_CmdArray(0xff, 0x80, 0x80, 0x80, 0x00));
-    LED1_ON();
+        LED1_ON();
 
     Send_Cmd(cmd2); //stay high
     printf("128\r\n");
@@ -134,6 +105,8 @@ int main(void)
     // delay_ms(1000);
     printf("0\r\n");
 
+    LED1_OFF();
+
     // Send_Cmd(cmd4); //up
     // delay_ms(10);
     // Send_Cmd(cmd2); //stay high
@@ -156,8 +129,40 @@ int main(void)
     // Send_Cmd(cmd3); //down
     // delay_ms(5000);
     Send_Cmd(cmd11); //stop
+}
 
-    LED1_OFF();
+int main(void)
+{
+    delay_init();
+    LED_Init();
+    OLED_Init();
+    // Key_Init();
+    uart1_init(115200);
+    control_uart2_init(19200);
+    FlowData_uart3_init(19200);
+    PidPara_Init();
+    // Timer_Init();
+	// Pwm_Init();
+		
+	OLED_Fill_Fast(0xFF); //填充白色
+	delay_ms(500);
+	OLED_Fill_Fast(0x00); //清屏
+
+    OLED_ShowStr(0,0,"speed_x:000",1);
+    OLED_ShowStr(0,1,"speed_y:000",1);
+    OLED_ShowStr(0,2,"quality:000",1);
+    
+    OLED_ShowStr(0,4,"speed_x:000",1);
+    OLED_ShowStr(0,5,"speed_y:000",1);
+
+    OLED_ShowStr(0,6,"move_x:",1);
+    OLED_ShowStr(0,7,"move_y:",1);
+
+    Timer_Init();
+
+    // 测试命令
+    // Send_Cmd(mk_CmdArray(0xff, 0x80, 0x80, 0x80, 0x00));
+    // Cmd_Test();
 
     while(1)
     {
@@ -191,10 +196,9 @@ void TIM2_IRQHandler(void) //10ms
 {
     if(TIM_GetITStatus(TIM2,TIM_IT_Update)==SET)
     {
-        // LED1_Turn();
         // count++;
         
-        if((USART_RX_STA&0x8000)!=0)//接收完成
+        if((USART_RX_STA&0x8000)!=0)//flow接收完成
 		{
             // printf("count = %d\r\n",count);
             // count = 0;
@@ -215,14 +219,30 @@ void TIM2_IRQHandler(void) //10ms
             // printf("move_x:%f,%f\r\n",Flow_Data.move_x,Flow_Data.move_y);
             // OLED_ShowNum(54,6,Flow_Data.move_x,5,12);
             // OLED_ShowNum(54,7,Flow_Data.move_y,5,12);
-            
-            //PID参数计算
-            // PID_Cal(&PID_Posi_High, 1000, heigh);
-            // PID_Cal(&PID_Posi_x, 0, Flow_Data.move_x);
-            // PID_Cal(&PID_Posi_y, 0, Flow_Data.move_y);
-
-
 		}
+
+        if(USART1_RX_STA == 1)
+        {
+            static u8 sum, distance;
+
+            for(sum=0,i=0;i<(USART1_RX_BUF[3]+4);i++)//rgb_data[3]=3
+			sum+=USART1_RX_BUF[i];
+			if(sum==USART1_RX_BUF[i])//校验和判断
+			{
+				distance=USART1_RX_BUF[4]<<8|USART1_RX_BUF[5];
+				// RangeStatus=(USART1_RX_BUF[6]>>4)&0x0f;
+				// Time=(USART1_RX_BUF[6]>>2)&0x03;
+				// Mode=USART1_RX_BUF[6]&0x03;
+				// send_3out(&USART1_RX_BUF[4],3,0x15);//上传给上位机
+			}
+            printf("distance:%d\r\n",distance);
+			USART1_RX_STA = 0;//处理数据完毕标志
+        }
+
+        //PID参数计算
+        // PID_Cal(&PID_Posi_High, 1000, heigh);
+        // PID_Cal(&PID_Posi_x, 0, Flow_Data.move_x);
+        // PID_Cal(&PID_Posi_y, 0, Flow_Data.move_y);
         TIM_ClearITPendingBit(TIM2,TIM_IT_Update); //清除标志位
     }
 }

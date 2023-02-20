@@ -1,5 +1,6 @@
 #include "sys.h"
-#include "usart.h"	  
+#include "usart.h"
+#include "string.h"
 ////////////////////////////////////////////////////////////////////////////////// 	 
 //如果使用ucos,则包括下面的头文件即可.
 #if SYSTEM_SUPPORT_OS
@@ -32,15 +33,7 @@ int fputc(int ch, FILE *f)
 #endif 
 
 #if EN_USART1_RX   //如果使能了接收
-//串口1中断服务程序
-//注意,读取USARTx->SR能避免莫名其妙的错误   	
-u8 USART1_RX_BUF[USART1_REC_LEN];     //接收缓冲,最大USART_REC_LEN个字节.
-//接收状态
-//bit15，	接收完成标志
-//bit14，	接收到0x0d
-//bit13~0，	接收到的有效字节数目
-u16 USART1_RX_STA=0;       //接收状态标记	  
-  
+
 void uart1_init(u32 bound){
 	//GPIO端口设置
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -82,38 +75,74 @@ void uart1_init(u32 bound){
 
 }
 
+//串口1中断服务程序
+//注意,读取USARTx->SR能避免莫名其妙的错误   	
+u8 USART1_RX_BUF[USART1_REC_LEN];     //接收缓冲,最大USART_REC_LEN个字节.
+//接收状态
+//bit15，	接收完成标志
+//bit14，	接收到0x0d
+//bit13~0，	接收到的有效字节数目
+u16 USART1_RX_STA=0;       //接收状态标记
+
 void USART1_IRQHandler(void)                	//串口1中断服务程序
+{
+	static uint8_t i=0,rebuf[20]={0};
+	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)//判断接收标志
 	{
-	u8 Res;
-#if SYSTEM_SUPPORT_OS 		//如果SYSTEM_SUPPORT_OS为真，则需要支持OS.
-	OSIntEnter();    
-#endif
-	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)  //接收中断(接收到的数据必须是0x0d 0x0a结尾)
-		{
-		Res =USART_ReceiveData(USART1);	//读取接收到的数据
-		
-		if((USART1_RX_STA&0x8000)==0)//接收未完成
+		rebuf[i++]=USART_ReceiveData(USART1);//读取串口数据，同时清接收标志
+		if (rebuf[0]!=0x5a)//帧头不对
 			{
-			if(USART1_RX_STA&0x4000)//接收到了0x0d
-				{
-				if(Res!=0x0a)USART1_RX_STA=0;//接收错误,重新开始
-				else USART1_RX_STA|=0x8000;	//接收完成了 
-				}
-			else //还没收到0X0D
-				{	
-				if(Res==0x0d)USART1_RX_STA|=0x4000;
-				else
+				// printf("1   error\r\n");
+				i=0;
+			}	
+		if ((i==2)&&(rebuf[1]!=0x5a))//帧头不对
+			{
+				// printf("2   error\r\n");
+				i=0;
+			}
+	
+		if(i>3)//i等于4时，已经接收到数据量字节rebuf[3]
+		{
+			if(i!=(rebuf[3]+5))//判断是否接收一帧数据完毕
+				return;	
+			switch(rebuf[2])//接收完毕后处理
+			{
+				case 0x15:
+					if(!USART1_RX_STA)//当数据处理完成后才接收新的数据
 					{
-					USART1_RX_BUF[USART1_RX_STA&0X3FFF]=Res ;
-					USART1_RX_STA++;
-					if(USART1_RX_STA>(USART1_REC_LEN-1))USART1_RX_STA=0;//接收数据错误,重新开始接收	  
-					}		 
-				}
-			}   		 
-     } 
-#if SYSTEM_SUPPORT_OS 	//如果SYSTEM_SUPPORT_OS为真，则需要支持OS.
-	OSIntExit();  											 
-#endif
+						printf("receive finish\r\n");
+						memcpy(USART1_RX_BUF,rebuf,8);//拷贝接收到的数据
+						USART1_RX_STA=1;//接收完成标志
+						// USART1_RX_STA = 0; //清除标志
+					}
+					break;
+			
+			}
+			i=0;//缓存清0
+		}
+	}
+	// u8 Res;
+	// if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)  //接收中断
+	// 	Res =USART_ReceiveData(USART1);	//读取接收到的数据
+	// 	if((USART1_RX_STA&0x8000)==0)//接收未完成
+	// 	{
+	// 		if(USART1_RX_STA&0x4000)//接收到了0x0d
+	// 			{
+	// 			if(Res!=0x0a)USART1_RX_STA=0;//接收错误,重新开始
+	// 			else USART1_RX_STA|=0x8000;	//接收完成了 
+	// 			}
+	// 		else //还没收到0X0D
+	// 			{	
+	// 			if(Res==0x0d)USART1_RX_STA|=0x4000;
+	// 			else
+	// 				{
+	// 				USART1_RX_BUF[USART1_RX_STA&0X3FFF]=Res ;
+	// 				USART1_RX_STA++;
+	// 				if(USART1_RX_STA>(USART1_REC_LEN-1))USART1_RX_STA=0;//接收数据错误,重新开始接收	  
+	// 				}		 
+	// 			}
+	// 	}
+	// }
 } 
 
 // void USART1_IRQHandler(void)                	//串口1中断服务程序
