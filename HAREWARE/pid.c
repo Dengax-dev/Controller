@@ -72,9 +72,9 @@ void PidPara_Init(void)
     PID_Posi_y.Dout = 0;             //微分项输出
     PID_Posi_y.OutPut = 0;           //总输出
 
-    PID_Posi_High.P = 0;
-    PID_Posi_High.I = 0;
-    PID_Posi_High.D = 0;
+    PID_Posi_High.P = 1;
+    PID_Posi_High.I = 0.001;
+    PID_Posi_High.D = 0.005;
     PID_Posi_High.Error = 0;            //比例项
     PID_Posi_High.Integral = 0;         //积分项
     PID_Posi_High.Differ = 0;           //微分项
