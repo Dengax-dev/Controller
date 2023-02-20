@@ -90,33 +90,23 @@ void USART1_IRQHandler(void)                	//串口1中断服务程序
 	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)//判断接收标志
 	{
 		rebuf[i++]=USART_ReceiveData(USART1);//读取串口数据，同时清接收标志
-		if (rebuf[0]!=0x5a)//帧头不对
-			{
-				// printf("1   error\r\n");
-				i=0;
-			}	
-		if ((i==2)&&(rebuf[1]!=0x5a))//帧头不对
-			{
-				// printf("2   error\r\n");
-				i=0;
-			}
+
+		if (rebuf[0]!=0x5a) i=0;//帧头不对
+		if ((i==2)&&(rebuf[1]!=0x5a)) i=0;//帧头不对
 	
 		if(i>3)//i等于4时，已经接收到数据量字节rebuf[3]
 		{
-			if(i!=(rebuf[3]+5))//判断是否接收一帧数据完毕
-				return;	
+			if(i!=(rebuf[3]+5)) return;//判断是否接收一帧数据完毕
 			switch(rebuf[2])//接收完毕后处理
 			{
 				case 0x15:
 					if(!USART1_RX_STA)//当数据处理完成后才接收新的数据
 					{
-						printf("receive finish\r\n");
-						memcpy(USART1_RX_BUF,rebuf,8);//拷贝接收到的数据
+						memcpy(USART1_RX_BUF,rebuf,8);//拷贝保存接收到的数据
 						USART1_RX_STA=1;//接收完成标志
 						// USART1_RX_STA = 0; //清除标志
 					}
 					break;
-			
 			}
 			i=0;//缓存清0
 		}

@@ -145,8 +145,10 @@ int main(void)
 	// Pwm_Init();
 		
 	OLED_Fill_Fast(0xFF); //填充白色
-	delay_ms(500);
+	delay_ms(200);
 	OLED_Fill_Fast(0x00); //清屏
+
+    Timer_Init();
 
     OLED_ShowStr(0,0,"speed_x:000",1);
     OLED_ShowStr(0,1,"speed_y:000",1);
@@ -158,10 +160,7 @@ int main(void)
     OLED_ShowStr(0,6,"move_x:",1);
     OLED_ShowStr(0,7,"move_y:",1);
 
-    Timer_Init();
-
     // 测试命令
-    // Send_Cmd(mk_CmdArray(0xff, 0x80, 0x80, 0x80, 0x00));
     // Cmd_Test();
 
     while(1)
@@ -196,8 +195,6 @@ void TIM2_IRQHandler(void) //10ms
 {
     if(TIM_GetITStatus(TIM2,TIM_IT_Update)==SET)
     {
-        // count++;
-        
         if((USART_RX_STA&0x8000)!=0)//flow接收完成
 		{
             // printf("count = %d\r\n",count);
@@ -221,21 +218,22 @@ void TIM2_IRQHandler(void) //10ms
             // OLED_ShowNum(54,7,Flow_Data.move_y,5,12);
 		}
 
-        if(USART1_RX_STA == 1)
+        if(USART1_RX_STA == 1) //vl53l1x接收完成
         {
-            static u8 sum, distance;
+            static u8 sum, distance, RangeStatus;
 
             for(sum=0,i=0;i<(USART1_RX_BUF[3]+4);i++)//rgb_data[3]=3
 			sum+=USART1_RX_BUF[i];
 			if(sum==USART1_RX_BUF[i])//校验和判断
 			{
 				distance=USART1_RX_BUF[4]<<8|USART1_RX_BUF[5];
-				// RangeStatus=(USART1_RX_BUF[6]>>4)&0x0f;
+				RangeStatus=(USART1_RX_BUF[6]>>4)&0x0f; //0:距离值可靠
 				// Time=(USART1_RX_BUF[6]>>2)&0x03;
 				// Mode=USART1_RX_BUF[6]&0x03;
 				// send_3out(&USART1_RX_BUF[4],3,0x15);//上传给上位机
 			}
-            printf("distance:%d\r\n",distance);
+            // if(RangeStatus == 0) printf("distance:%d\r\n",distance);
+
 			USART1_RX_STA = 0;//处理数据完毕标志
         }
 
@@ -243,6 +241,7 @@ void TIM2_IRQHandler(void) //10ms
         // PID_Cal(&PID_Posi_High, 1000, heigh);
         // PID_Cal(&PID_Posi_x, 0, Flow_Data.move_x);
         // PID_Cal(&PID_Posi_y, 0, Flow_Data.move_y);
+
         TIM_ClearITPendingBit(TIM2,TIM_IT_Update); //清除标志位
     }
 }
