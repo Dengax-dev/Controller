@@ -16,6 +16,9 @@
         "gl9306.h": "c",
         "cmath": "c",
         "*.tcc": "c",
-        "cstdlib": "c"
+        "cstdlib": "c",
+        "pid.h": "c",
+        "control.h": "c",
+        "stdio.h": "c"
     }
 }
