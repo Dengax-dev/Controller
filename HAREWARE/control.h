@@ -2,17 +2,14 @@
 #define __CONTROL_H
 
 #define CONTROL_USART           USART2
+#define CONTROL_INTERVAL        300 // 控制间隔300ms
 
-// #define CMD2_ARRAY     cmd2
-// #define CMD3_ARRAY     cmd3
-// #define CMD4_ARRAY     cmd4
-// #define CMD5_ARRAY     cmd5
-// #define CMD6_ARRAY     cmd6
-// #define CMD7_ARRAY     cmd7
-// #define CMD8_ARRAY     cmd8
-// #define CMD9_ARRAY     cmd9
-// #define CMD10_ARRAY    cmd10
-// #define CMD11_ARRAY    cmd11
+typedef struct 
+{
+    u8 fly_state; //飞机状态 0落地 1飞起
+    uint16_t height;
+}PLANESTATE;
+
 
 extern u8 cmd2[] ;
 extern u8 cmd3[] ;
@@ -24,6 +21,7 @@ extern u8 cmd8[] ;
 extern u8 cmd9[] ;
 extern u8 cmd10[];
 extern u8 cmd11[];
+extern PLANESTATE PlaneState;
 
 
 void control_uart2_init(u32 bound);

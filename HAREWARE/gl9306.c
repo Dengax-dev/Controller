@@ -102,6 +102,6 @@ void flow_decode(u8 *UartRxOpticalFlow)
 //光流位移计算
 void move_cal(uint16_t opticalflow_high)
 {
-	Flow_Data.move_x+=(Flow_Data.speed_x*opticalflow_high)/1000.0f;//单位:mm   乘以高度单位mm
-    Flow_Data.move_y+=(Flow_Data.speed_y*opticalflow_high)/1000.0f;//单位:mm   乘以高度单位mm
+	Flow_Data.move_x+=(Flow_Data.speed_x*opticalflow_high)/272.0f;//单位:mm   乘以高度单位mm
+    Flow_Data.move_y+=(Flow_Data.speed_y*opticalflow_high)/272.0f;//单位:mm   乘以高度单位mm
 }

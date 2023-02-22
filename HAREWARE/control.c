@@ -1,6 +1,9 @@
 #include "stm32f10x.h"
 #include "control.h"
 
+PLANESTATE PlaneState = {0, 0};
+
+// 部分基础指令
 u8 cmd2[]  = {0x66, 0x80, 0x80, 0x80, 0x80, 0x00, 0x00, 0x99}; //定高模式
 u8 cmd3[]  = {0x66, 0x80, 0x80, 0x00, 0x80, 0x00, 0x80, 0x99}; //极速下降
 u8 cmd4[]  = {0x66, 0x80, 0x80, 0xff, 0x80, 0x00, 0x7f, 0x99}; //极速上升
@@ -75,7 +78,7 @@ void Send_Cmd(u8 *cmd_array)
 //     return data6;
 // }
 
-//生成控制数组
+//生成控制命令数组
 u8* mk_CmdArray_Dec(u8 data1, u8 data2, u8 data3, u8 data4)
 {
     return mk_CmdArray_Hex(DEC_HEX(data1), DEC_HEX(data2), DEC_HEX(data3), DEC_HEX(data4));
@@ -85,7 +88,7 @@ u8* mk_CmdArray_Dec(u8 data1, u8 data2, u8 data3, u8 data4)
 u8* mk_CmdArray_Hex(u8 data1, u8 data2, u8 data3, u8 data4)
 {
     static u8 array[8];
-    u8 i;
+    // u8 i;
     array[0] = 0x66; 
     array[1] = data1;
     array[2] = data2;
@@ -95,11 +98,11 @@ u8* mk_CmdArray_Hex(u8 data1, u8 data2, u8 data3, u8 data4)
     array[6] = data1^data2^data3^data4^(0x00); //校验位
     array[7] = 0x99;
 
-    for(i = 0; i < 8; i++)
-    {
-        while(USART_GetFlagStatus(USART1,USART_FLAG_TC)==RESET);
-        USART_SendData(USART1, array[i]);
-    }
+    // for(i = 0; i < 8; i++)
+    // {
+    //     while(USART_GetFlagStatus(USART1,USART_FLAG_TC)==RESET);
+    //     USART_SendData(USART1, array[i]);
+    // }
 
     return array;
 }
@@ -204,10 +207,4 @@ do{
 } while(ram/16 >= 0 && i <= 8);
     return Hex;
 }
-
-//油门控制  传入油门值：128平衡  0-127下降  129-255上升
-
-
-
- //命令2：定高模式
 
