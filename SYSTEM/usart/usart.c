@@ -55,8 +55,8 @@ void uart1_init(u32 bound){
 
   //Usart1 NVIC 配置
 	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=3 ;//抢占优先级3
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;		//子优先级3
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=0 ;//抢占优先级3
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;		//子优先级3
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;			//IRQ通道使能
 	NVIC_Init(&NVIC_InitStructure);	//根据指定的参数初始化VIC寄存器
   
@@ -87,6 +87,8 @@ u16 USART1_RX_STA=0;       //接收状态标记
 void USART1_IRQHandler(void)                	//串口1中断服务程序
 {
 	static uint8_t i=0,rebuf[20]={0};
+	// static uint16_t sum, distance, RangeStatus;
+
 	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)//判断接收标志
 	{
 		rebuf[i++]=USART_ReceiveData(USART1);//读取串口数据，同时清接收标志
@@ -104,6 +106,20 @@ void USART1_IRQHandler(void)                	//串口1中断服务程序
 					{
 						memcpy(USART1_RX_BUF,rebuf,8);//拷贝保存接收到的数据
 						USART1_RX_STA=1;//接收完成标志
+
+						// for(sum=0,i=0;i<(USART1_RX_BUF[3]+4);i++) sum+=USART1_RX_BUF[i];//rgb_data[3]=3
+
+						// if(sum==USART1_RX_BUF[i])//校验和判断
+						// {
+						// 	distance=USART1_RX_BUF[4]<<8|USART1_RX_BUF[5];
+						// 	RangeStatus=(USART1_RX_BUF[6]>>4)&0x0f; //0:距离值可靠
+						// 	// Time=(USART1_RX_BUF[6]>>2)&0x03;
+						// 	// Mode=USART1_RX_BUF[6]&0x03;
+						// 	// send_3out(&USART1_RX_BUF[4],3,0x15);//上传给上位机
+						// }
+						// if(RangeStatus == 0) printf("distance:%d\r\n",distance);
+
+						// USART1_RX_STA = 0;//处理数据完毕标志
 						// USART1_RX_STA = 0; //清除标志
 					}
 					break;

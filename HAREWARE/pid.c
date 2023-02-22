@@ -36,12 +36,29 @@ void PID_Cal(PID_TYPE *PID, float target, float measure)
     PID->Dout = PID->D * PID->Differ;
 
     PID->OutPut = PID->Pout + PID->Iout + PID->Dout;
+    if(PID->OutPut >=  127)PID->OutPut =  127; //输出限幅
+    if(PID->OutPut <= -127)PID->OutPut = -127;
 
     PID->PreError = PID->Error; //更新前误差
 }
 
 void PidPara_Init(void)
 {
+    PID_Posi_High.P = 0.090;   //0.1
+    PID_Posi_High.I = 0.010;    //0
+    PID_Posi_High.D = 0.050;   //0.01
+    PID_Posi_High.Error = 0;            //比例项
+    PID_Posi_High.Integral = 0;         //积分项
+    PID_Posi_High.Differ = 0;           //微分项
+    PID_Posi_High.PreError = 0;         //前一次误差
+    PID_Posi_High.Ilimit = 600;           //积分限幅
+    // PID_Posi_High.Irang = 20;            //积分限幅
+    PID_Posi_High.Ilimit_flag = 0;    //积分分离标志
+    PID_Posi_High.Pout = 0;             //比例项输出
+    PID_Posi_High.Iout = 0;             //积分项输出
+    PID_Posi_High.Dout = 0;             //微分项输出
+    PID_Posi_High.OutPut = 0;           //总输出
+
     PID_Posi_x.P = 0;
     PID_Posi_x.I = 0;
     PID_Posi_x.D = 0;
@@ -72,20 +89,6 @@ void PidPara_Init(void)
     PID_Posi_y.Dout = 0;             //微分项输出
     PID_Posi_y.OutPut = 0;           //总输出
 
-    PID_Posi_High.P = 0;
-    PID_Posi_High.I = 0;
-    PID_Posi_High.D = 0;
-    PID_Posi_High.Error = 0;            //比例项
-    PID_Posi_High.Integral = 0;         //积分项
-    PID_Posi_High.Differ = 0;           //微分项
-    PID_Posi_High.PreError = 0;         //前一次误差
-    PID_Posi_High.Ilimit = 0;           //积分分离
-    PID_Posi_High.Irang = 0;            //积分限幅
-    PID_Posi_High.Ilimit_flag = 0;    //积分分离标志
-    PID_Posi_High.Pout = 0;             //比例项输出
-    PID_Posi_High.Iout = 0;             //积分项输出
-    PID_Posi_High.Dout = 0;             //微分项输出
-    PID_Posi_High.OutPut = 0;           //总输出
 }
 
 ///*悬停控制*/

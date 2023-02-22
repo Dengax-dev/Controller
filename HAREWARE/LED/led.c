@@ -13,6 +13,7 @@ void LED_Init(void)
     GPIO_Init(GPIOC,&GPIO_InitStructure);
     
     // GPIOC_13初始化
+    GPIO_SetBits(GPIOC,GPIO_Pin_13);
 
 }
 
