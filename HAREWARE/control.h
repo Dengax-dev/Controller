@@ -2,7 +2,7 @@
 #define __CONTROL_H
 
 #define CONTROL_USART           USART2
-#define CONTROL_INTERVAL        300 // 控制间隔300ms
+#define CONTROL_INTERVAL        500 // 控制间隔500ms
 
 typedef struct 
 {

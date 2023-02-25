@@ -1,3 +1,4 @@
+#include "stm32f10x.h"
 #include "pid.h"
 
 Gl9306_kalman_Data Flow_kalman_Data = {0,0};
@@ -26,11 +27,19 @@ void PID_Cal(PID_TYPE *PID, float target, float measure)
 {
     PID->Error = target - measure; //误差
     PID->Differ = PID->Error - PID->PreError; //微分量
-    PID->Integral += PID->Error; //累计误差
 
-    if(PID->Integral > PID->Ilimit)  PID->Integral = PID->Ilimit; //积分限幅
-    if(PID->Integral < -PID->Ilimit) PID->Integral = -PID->Ilimit;
-
+    if((PID->Error > PID->Ilimit)||(PID->Error < -PID->Ilimit))
+    {
+        PID->Ilimit_flag = 1;
+    }
+    else
+    {
+        PID->Ilimit_flag = 0;
+        PID->Integral += 0.01*PID->Error; //累计误差
+        if(PID->Integral > PID->Irang)  PID->Integral = PID->Irang; //积分限幅
+        if(PID->Integral < -PID->Irang) PID->Integral = -PID->Irang;
+    }
+    
     PID->Pout = PID->P * PID->Error;
     PID->Iout = PID->I * PID->Integral;
     PID->Dout = PID->D * PID->Differ;
@@ -44,15 +53,15 @@ void PID_Cal(PID_TYPE *PID, float target, float measure)
 
 void PidPara_Init(void)
 {
-    PID_Posi_High.P = 0.090;   //0.1
-    PID_Posi_High.I = 0.010;    //0
-    PID_Posi_High.D = 0.050;   //0.01
+    PID_Posi_High.P = 0.120;   //0.1    0.090;
+    PID_Posi_High.I = 0.010;    //0     0.010;
+    PID_Posi_High.D = 0.040;   //0.01   0.050;
     PID_Posi_High.Error = 0;            //比例项
     PID_Posi_High.Integral = 0;         //积分项
     PID_Posi_High.Differ = 0;           //微分项
     PID_Posi_High.PreError = 0;         //前一次误差
-    PID_Posi_High.Ilimit = 600;           //积分限幅
-    // PID_Posi_High.Irang = 20;            //积分限幅
+    PID_Posi_High.Ilimit = 150;           //积分限幅
+    PID_Posi_High.Irang = 500;            //积分范围
     PID_Posi_High.Ilimit_flag = 0;    //积分分离标志
     PID_Posi_High.Pout = 0;             //比例项输出
     PID_Posi_High.Iout = 0;             //积分项输出

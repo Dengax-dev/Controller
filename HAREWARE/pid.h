@@ -16,7 +16,7 @@ typedef struct PID{
     float PreError;         //前一次误差
     float Ilimit;           //积分分离
     float Irang;            //积分限幅
-    unsigned char Ilimit_flag;    //积分分离标志
+    u8 Ilimit_flag;         //积分分离标志
     float Pout;             //比例项输出
     float Iout;             //积分项输出
     float Dout;             //微分项输出

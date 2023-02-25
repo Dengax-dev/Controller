@@ -103,7 +103,6 @@ int main(void)
 
         // OLED_ShowNum(54,4,height,4,12);
 
-
         delay_ms(10);
         // Send_Cmd(cmd11);
     }
