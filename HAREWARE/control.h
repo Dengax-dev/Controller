@@ -2,12 +2,13 @@
 #define __CONTROL_H
 
 #define CONTROL_USART           USART2
-#define CONTROL_INTERVAL        500 // 控制间隔500ms
+#define CONTROL_INTERVAL        10 // 控制间隔500ms
 
 typedef struct 
 {
     u8 fly_state; //飞机状态 0落地 1飞起
     uint16_t height;
+    u8 pre_landing; //预备降落标志 1预备降落
 }PLANESTATE;
 
 

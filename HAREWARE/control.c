@@ -1,7 +1,7 @@
 #include "stm32f10x.h"
 #include "control.h"
 
-PLANESTATE PlaneState = {0, 0};
+PLANESTATE PlaneState = {0, 0, 0};
 
 // 部分基础指令
 u8 cmd2[]  = {0x66, 0x80, 0x80, 0x80, 0x80, 0x00, 0x00, 0x99}; //定高模式

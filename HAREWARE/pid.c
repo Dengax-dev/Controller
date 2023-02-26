@@ -53,9 +53,9 @@ void PID_Cal(PID_TYPE *PID, float target, float measure)
 
 void PidPara_Init(void)
 {
-    PID_Posi_High.P = 0.120;   //0.1    0.090;
+    PID_Posi_High.P = 0.140;   //0.1    0.090;
     PID_Posi_High.I = 0.010;    //0     0.010;
-    PID_Posi_High.D = 0.040;   //0.01   0.050;
+    PID_Posi_High.D = 0.110;   //0.01   0.050;
     PID_Posi_High.Error = 0;            //比例项
     PID_Posi_High.Integral = 0;         //积分项
     PID_Posi_High.Differ = 0;           //微分项
@@ -68,30 +68,30 @@ void PidPara_Init(void)
     PID_Posi_High.Dout = 0;             //微分项输出
     PID_Posi_High.OutPut = 0;           //总输出
 
-    PID_Posi_x.P = 0;
-    PID_Posi_x.I = 0;
-    PID_Posi_x.D = 0;
+    PID_Posi_x.P = 0.7;
+    PID_Posi_x.I = 0.45;
+    PID_Posi_x.D = 4.8;
     PID_Posi_x.Error = 0;            //比例项
     PID_Posi_x.Integral = 0;         //积分项
     PID_Posi_x.Differ = 0;           //微分项
     PID_Posi_x.PreError = 0;         //前一次误差
-    PID_Posi_x.Ilimit = 0;           //积分分离
-    PID_Posi_x.Irang = 0;            //积分限幅
+    PID_Posi_x.Ilimit = 300;           //积分分离
+    PID_Posi_x.Irang = 5000;            //积分限幅
     PID_Posi_x.Ilimit_flag = 0;    //积分分离标志
     PID_Posi_x.Pout = 0;             //比例项输出
     PID_Posi_x.Iout = 0;             //积分项输出
     PID_Posi_x.Dout = 0;             //微分项输出
     PID_Posi_x.OutPut = 0;           //总输出
 
-    PID_Posi_y.P = 0;
-    PID_Posi_y.I = 0;
-    PID_Posi_y.D = 0;
+    PID_Posi_y.P = 0.7;
+    PID_Posi_y.I = 0.45;
+    PID_Posi_y.D = 4.8;
     PID_Posi_y.Error = 0;            //比例项
     PID_Posi_y.Integral = 0;         //积分项
     PID_Posi_y.Differ = 0;           //微分项
     PID_Posi_y.PreError = 0;         //前一次误差
-    PID_Posi_y.Ilimit = 0;           //积分分离
-    PID_Posi_y.Irang = 0;            //积分限幅
+    PID_Posi_y.Ilimit = 400;           //积分分离
+    PID_Posi_y.Irang = 5000;            //积分限幅
     PID_Posi_y.Ilimit_flag = 0;    //积分分离标志
     PID_Posi_y.Pout = 0;             //比例项输出
     PID_Posi_y.Iout = 0;             //积分项输出

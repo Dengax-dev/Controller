@@ -9,7 +9,7 @@ void Timer_Init(void)
 
     TIM_TimeBaseInitStruct.TIM_ClockDivision=TIM_CKD_DIV1;//预分频
     TIM_TimeBaseInitStruct.TIM_CounterMode=TIM_CounterMode_Up;//计数模式，选择向上计数
-    TIM_TimeBaseInitStruct.TIM_Period=100-1;//自动重装器值
+    TIM_TimeBaseInitStruct.TIM_Period=200-1;//自动重装器值
     TIM_TimeBaseInitStruct.TIM_Prescaler=7200-1;//psc预分频器值
     TIM_TimeBaseInitStruct.TIM_RepetitionCounter=0;//重复计数器值，此处不需要开启
 

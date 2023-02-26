@@ -11,15 +11,26 @@
 #include "pid.h"
 #include "control.h"
 
-// u8 cmd1[] = {0x00, 0x01, 0xd3, 0xff,0x00, 0x01, 0xd3, 0xff};
+#define LENGTH   70
 
 // int count = 0;
 // u8 *a;
 // int i,j ;
 u8 Ctrl_Interval_Count;
+u8 Step = 0; //任务状态机 0初始化 1-起飞 2-点高1s 3-下降 4等待10s 5——起飞 6向前1m 7——等待5s 8回来10m 9降落
+u8 task2 = 0; //任务2
+u16 forward = 0; //0无任务2 1任务2前进 2任务2后退
+u8 circle = 0;
 
 
-
+void delay_s(u16 s)
+{
+    int i = 0;
+    for(i = 0; i < s; i++)
+    {
+        delay_ms(1000);
+    }
+}
 //数字正负取反
 int16_t change(int16_t num)
 {
@@ -30,7 +41,7 @@ int16_t change(int16_t num)
 
 void Take_Off(PLANESTATE *StateStruct)
 {
-    if(StateStruct->fly_state == 0)
+    if((StateStruct->fly_state == 0)&&(StateStruct->pre_landing != 1))
     {
         delay_ms(1500);
         delay_ms(1500);
@@ -66,30 +77,53 @@ void Take_Off(PLANESTATE *StateStruct)
     }
 }
 
+void Landing(PLANESTATE *StateStruct)
+{
+    int a = 128;
+
+    StateStruct->pre_landing = 1;
+
+    for(a = 128; a > 1; a-=1)
+    {
+        // Send_Cmd(mk_CmdArray_Dec((128 + PID_Posi_y.OutPut), (128 + PID_Posi_x.OutPut), a, 128)); //这里有一个画圆后的失控，如果不使用画圆任务就可以使用该命令
+        Send_Cmd(mk_CmdArray_Dec(128, 128, a, 128));
+        delay_ms(50);
+        if(StateStruct->height <= 100)
+        {
+            Send_Cmd(cmd11);
+        
+            StateStruct->pre_landing = 0;
+            StateStruct->fly_state = 0; //飞机落地标志
+            return;
+        }
+    }
+    Send_Cmd(cmd11);
+    
+    StateStruct->pre_landing = 0;
+    StateStruct->fly_state = 0; //飞机落地标志
+}
+
 int main(void)
 {
     delay_init();
     LED_Init();
-    OLED_Init();
+    // OLED_Init();
     // Key_Init();
     uart1_init(115200);
     control_uart2_init(19200);
     FlowData_uart3_init(19200);
-    PidPara_Init();
+    // PidPara_Init();
     Timer_Init();
 		
-	OLED_Fill_Fast(0xFF); //填充白色
-	delay_ms(200);
-	OLED_Fill_Fast(0x00); //清屏
+	// OLED_Fill_Fast(0xFF); //填充白色
+	// delay_ms(200);
+	// OLED_Fill_Fast(0x00); //清屏
 
-    OLED_ShowStr(0,0,"speed_x:000",1);
-    OLED_ShowStr(0,1,"speed_y:000",1);
-    OLED_ShowStr(0,2,"quality:000",1);
+    // OLED_ShowStr(0,0,"speed_x:000",1);
+    // OLED_ShowStr(0,1,"speed_y:000",1);
+    // OLED_ShowStr(0,2,"quality:000",1);
     
-    OLED_ShowStr(0,4,"distance:0",1);
-
-    // 起飞
-    Take_Off(&PlaneState);
+    // OLED_ShowStr(0,4,"distance:0",1);
 
     while(1)
     {
@@ -102,8 +136,51 @@ int main(void)
         // OLED_ShowNum(48,2,Flow_Data.quality,3,12);
 
         // OLED_ShowNum(54,4,height,4,12);
-
-        delay_ms(10);
+        switch (Step)
+        {
+        case 0:
+            Step = 1;
+            break;
+        case 1: //任务一
+            Flow_Data.move_x = 0;
+            Flow_Data.move_y = 0;
+            PidPara_Init();
+            Take_Off(&PlaneState);
+            delay_s(10);
+            Landing(&PlaneState);
+            Step = 5;
+            break;
+        case 5: //任务2
+            Flow_Data.move_x = 0;
+            Flow_Data.move_y = 0;
+            PidPara_Init();
+            Take_Off(&PlaneState);
+            forward = 0;
+            task2 = 1;
+            delay_s(20);
+            forward = LENGTH;
+            task2 = 2;
+            delay_s(20);
+            Landing(&PlaneState);
+            Step = 10;
+            break;
+        case 10:
+            Flow_Data.move_x = 0;
+            Flow_Data.move_y = 0;
+            PidPara_Init();
+            Take_Off(&PlaneState);
+            circle = 1;
+            delay_s(15);
+            // Send_Cmd(cmd11);
+            
+            Landing(&PlaneState);
+            Step =  11;
+            break;
+        
+        default:
+            break;
+        }
+        
         // Send_Cmd(cmd11);
     }
 }
@@ -134,20 +211,51 @@ void TIM2_IRQHandler(void) //10ms
         }
 
         //PID参数计算
-        PID_Cal(&PID_Posi_High, 1000, PlaneState.height);
-        printf("target Height ThrottleOut:1000,%d,%f,%f\r\n",PlaneState.height, (128+PID_Posi_High.OutPut), PID_Posi_High.Integral);
-        // PID_Cal(&PID_Posi_x, 0, Flow_Data.move_x);
-        // PID_Cal(&PID_Posi_y, 0, Flow_Data.move_y);
+        PID_Cal(&PID_Posi_High, 1000+30, PlaneState.height);
+
+        if(task2 == 1) {
+            if(forward < LENGTH) forward+=1;
+            PID_Cal(&PID_Posi_x, forward, 0.1*Flow_Data.move_x);
+        }
+        else if(task2 ==2){
+            if(forward > 0) forward-=1;
+            PID_Cal(&PID_Posi_x, forward, 0.1*Flow_Data.move_x);
+        }
+        else PID_Cal(&PID_Posi_x, 0, 0.1*Flow_Data.move_x);
+
+        PID_Cal(&PID_Posi_y, 0, 0.1*Flow_Data.move_y);
+
+        printf("target Height ThrottleOut FlowSPx FlowSPy flowDMx flowDMy :1000,%d,%f,%f,%d,%d,%f,%f,%f,%f,%f,%f\r\n",
+        PlaneState.height,
+        (128+PID_Posi_High.OutPut),
+        PID_Posi_High.Integral,
+        Flow_Data.speed_x, 
+        Flow_Data.speed_y, 
+        Flow_Data.move_x, 
+        Flow_Data.move_y, 
+        (128+PID_Posi_x.OutPut), 
+        (128+PID_Posi_y.OutPut),
+        PID_Posi_x.Integral,
+        PID_Posi_y.Integral
+        );
 
         //无线串口打印状态信息
         // printf("m_x m_y sp_x sp_y h:%f,%f,%d,%d,%d,%d\r\n",Flow_Data.move_x, Flow_Data.move_y, Flow_Data.speed_x, Flow_Data.speed_y, height, Flow_Data.quality);
-
-        if((Ctrl_Interval_Count*10 >= CONTROL_INTERVAL)&&(PlaneState.fly_state == 1)){
-            Send_Cmd(mk_CmdArray_Dec(128, 128, (128 + PID_Posi_High.OutPut), 128)); //300ms发送指令
+        
+        if((Ctrl_Interval_Count*20 >= CONTROL_INTERVAL)&&(PlaneState.fly_state == 1)&&(PlaneState.pre_landing == 0)&&(circle !=1))
+        {
+            if(task2 == 1)
+            {
+                Send_Cmd(mk_CmdArray_Dec((128 + PID_Posi_y.OutPut), (128 + PID_Posi_x.OutPut), (128 + (int)(PID_Posi_High.OutPut)), 128)); //300ms发送指令
+            }
+            else Send_Cmd(mk_CmdArray_Dec((128 + PID_Posi_y.OutPut), (128 + PID_Posi_x.OutPut), (128 + (int)(PID_Posi_High.OutPut)), 128)); //300ms发送指令
 
             Ctrl_Interval_Count = 0;
         }
-
+        else if((Ctrl_Interval_Count*20 >= CONTROL_INTERVAL)&&(PlaneState.fly_state == 1)&&(PlaneState.pre_landing == 0)&&(circle == 1))
+        {
+                Send_Cmd(mk_CmdArray_Dec(128, 140, (128 + (int)(PID_Posi_High.OutPut)), 160));
+        }
         TIM_ClearITPendingBit(TIM2,TIM_IT_Update); //清除标志位
     }
 }
